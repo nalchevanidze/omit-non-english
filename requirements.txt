@@ -1,0 +1,7 @@
+scrapy
+pymongo
+mysql-connector
+configparser
+lxml
+xlrd
+langdetect 
