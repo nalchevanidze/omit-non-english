@@ -7,8 +7,8 @@ import pathlib
 from langdetect import detect
 import re
 
-INPUT_DIR = 'src/'
-OUTPUT_DIR = 'dist/'
+INPUT_DIR = 'input/'
+OUTPUT_DIR = 'output/'
 
 def reset_dir (name):
     print('reset directory: ' + name)
