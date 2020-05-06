@@ -58,7 +58,7 @@ def get_csv_list (dir):
 def main ():
     print("start processing ...")
     reset_dir(OUTPUT_DIR)
-    tasks = get_csv_list('./src')
+    tasks = get_csv_list(INPUT_DIR)
     for src in tasks:
         process_csv(src)
     
