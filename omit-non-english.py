@@ -23,12 +23,16 @@ def reset_dir (name):
 def isEnglish (content):
     source_text = content["text"]
     cleaned_text = remove_url(remove_hash_tag(source_text))
-    if(cleaned_text)
-    lang = detect(cleaned_text)
-    en = (lang == 'en')
-    # if(not en):
-    #     print("        removed:", lang, source_text);
-    return en;
+
+    try:
+      lang = detect(cleaned_text)
+      en = (lang == 'en')
+      if(not en):
+        print("        removed:", lang, source_text);
+        return en;
+    except:
+      print("        removed empty:", source_text);
+      return False
 
 def process_csv(name):
 
@@ -53,7 +57,7 @@ is_csv = re.compile('.*\.csv$')
 
 def remove_url(text):
     next_text = re.sub(r'https?:\/\/[\s]*[\S]*', '', text)
-    print ("removed url: \"",text, "\" \"" , next_text,"\"")
+    # print ("removed url: \"",text, "\" \"" , next_text,"\"")
     return next_text
 
 def remove_hash_tag(text):
