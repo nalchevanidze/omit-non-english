@@ -7,6 +7,7 @@ import pathlib
 from langdetect import detect
 import re
 
+
 INPUT_DIR = 'input/'
 OUTPUT_DIR = 'output/'
 
@@ -20,16 +21,19 @@ def reset_dir (name):
         os.makedirs(OUTPUT_DIR)
 
 def isEnglish (content):
-    lang = detect(content["text"])
+    source_text = content["text"]
+    cleaned_text = remove_url(remove_hash_tag(source_text))
+    if(cleaned_text)
+    lang = detect(cleaned_text)
     en = (lang == 'en')
-    if(not en):
-        print("        removed:", lang, content["text"]);
+    # if(not en):
+    #     print("        removed:", lang, source_text);
     return en;
 
 def process_csv(name):
 
     input_path = os.path.join(INPUT_DIR,name) 
-    print ("  start: ", input_path)
+  #  print ("  start: ", input_path)
 
     csv = pd.read_csv(input_path)
     items_en = [content for _, content  in csv.iterrows() if isEnglish(content) ]
@@ -38,7 +42,7 @@ def process_csv(name):
 
     csv_en = csv_en.replace({'\n': ' '}, regex=True).replace({'\t': ' '}, regex=True).replace({'\r': ' '}, regex=True) 
 
-    print("    end Process",name,"  sizes: ", csv.size, csv_en.size);
+  #  print("    end Process",name,"  sizes: ", csv.size, csv_en.size);
     
     output_path = os.path.join(OUTPUT_DIR,name) 
     csv_en.to_csv(output_path)
@@ -46,6 +50,14 @@ def process_csv(name):
 
 
 is_csv = re.compile('.*\.csv$')
+
+def remove_url(text):
+    next_text = re.sub(r'https?:\/\/[\s]*[\S]*', '', text)
+    print ("removed url: \"",text, "\" \"" , next_text,"\"")
+    return next_text
+
+def remove_hash_tag(text):
+    return re.sub(r'#[\S]*', '', text)
 
 def get_csv_list (dir):
     return [
