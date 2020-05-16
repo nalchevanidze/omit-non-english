@@ -4,12 +4,13 @@ import json
 import os 
 import shutil
 import pathlib 
-from langdetect import detect
+from langdetect import detect , detect_langs
 import re
 
 
 INPUT_DIR = 'input/'
 OUTPUT_DIR = 'output/'
+THRESHOLD = 0.9
 
 def reset_dir (name):
     print('reset directory: ' + name)
@@ -20,18 +21,27 @@ def reset_dir (name):
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
 
+def probIsEnglish (langs):
+    for x in langs:
+        if(x.lang == "en"):
+            return x.prob
+    return 0
+
 def isEnglish (content):
     source_text = content["text"]
-    cleaned_text = remove_url(remove_hash_tag(source_text))
+    cleaned_text = remove_hash_tag(source_text)
 
-    try:
-      lang = detect(cleaned_text)
-      en = (lang == 'en')
-      if(not en):
-        print("        removed:", lang, source_text);
-        return en;
-    except:
-      print("        removed empty:", source_text);
+    if(re.match(r'\w*',cleaned_text) is not None):
+      
+      probs = detect_langs(cleaned_text)
+      isEng = probIsEnglish(probs) > THRESHOLD
+
+      if(not isEng):
+        print("        removed:", probs, cleaned_text);
+        return True;
+
+    else:
+      print("        removed empty:", cleaned_text);
       return False
 
 def process_csv(name):
