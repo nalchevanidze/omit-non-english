@@ -4,7 +4,8 @@ import json
 import os 
 import shutil
 import pathlib 
-from langdetect import detect , detect_langs
+from langdetect import detect , detect_langs 
+from langdetect.lang_detect_exception import LangDetectException
 import re
 
 
@@ -29,19 +30,20 @@ def probIsEnglish (langs):
 
 def isEnglish (content):
     source_text = content["text"]
-    cleaned_text = remove_hash_tag(source_text)
+    cleaned_text = remove_url(remove_hash_tag(source_text))
 
-    if(re.match(r'\w*',cleaned_text) is not None):
-      
+    try:
       probs = detect_langs(cleaned_text)
       isEng = probIsEnglish(probs) > THRESHOLD
 
       if(not isEng):
-        print("        removed:", probs, cleaned_text);
-        return True;
+          print("        removed: ", probs)
+          print("            cleaned: \"", cleaned_text ,"\"");
+          print("            source: \"", source_text ,"\"");
+          return True;
 
-    else:
-      print("        removed empty:", cleaned_text);
+    except LangDetectException as e:
+      print("        removed empty:", e, cleaned_text);
       return False
 
 def process_csv(name):
@@ -66,9 +68,17 @@ def process_csv(name):
 is_csv = re.compile('.*\.csv$')
 
 def remove_url(text):
-    next_text = re.sub(r'https?:\/\/[\s]*[\S]*', '', text)
-    # print ("removed url: \"",text, "\" \"" , next_text,"\"")
-    return next_text
+    text = re.sub(r'https?:\/\/(www\.)?[\s]*[\S]*', '', text)
+
+    text = re.sub(r'(\.\.\. )?pic.twitter.com?[\s]*[\S]*', '', text)
+
+    text = re.sub(r'[\S]*.html', '', text)
+
+    text = re.sub(r'www\.[\s]*[\S]*', '', text)
+
+    text = re.sub(r'twitter\.com[\S]*', '', text)
+
+    return text.strip()
 
 def remove_hash_tag(text):
     return re.sub(r'#[\S]*', '', text)
