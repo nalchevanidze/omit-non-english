@@ -28,6 +28,13 @@ def probIsEnglish (langs):
             return x.prob
     return 0
 
+
+def print_removed(isEng, probs,cleaned,source):
+    if(not isEng):
+        print("        removed: ", probs)
+        print("            cleaned: \"", cleaned ,"\"")
+        print("            source: \"", source ,"\"")
+
 def isEnglish (content):
     source_text = content["text"]
     cleaned_text = remove_url(remove_hash_tag(source_text))
@@ -35,15 +42,11 @@ def isEnglish (content):
     try:
       probs = detect_langs(cleaned_text)
       isEng = probIsEnglish(probs) > THRESHOLD
-
-      if(not isEng):
-          print("        removed: ", probs)
-          print("            cleaned: \"", cleaned_text ,"\"");
-          print("            source: \"", source_text ,"\"");
-          return True;
+      print_removed(isEng,probs,cleaned_text, source_text)
+      return isEng
 
     except LangDetectException as e:
-      print("        removed empty:", e, cleaned_text);
+      print("        removed empty:", e, cleaned_text)
       return False
 
 def process_csv(name):
